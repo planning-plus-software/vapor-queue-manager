@@ -92,7 +92,7 @@ class JobPushCommand extends Command
 
     protected function distinctQueuesInJobsTable(): array
     {
-        return DB::table('jobs')
+        return DB::table(config('vapor-queue-manager.table_name'))
             ->select('queue')
             ->distinct('queue')
             ->pluck('queue')
@@ -102,7 +102,7 @@ class JobPushCommand extends Command
     protected function dispatchEligibleJobs()
     {
         foreach($this->dispatchableQueues as $queue){
-            DB::table('jobs')
+            DB::table(config('vapor-queue-manager.table_name'))
                 ->oldest('id')
                 ->where('queue', $queue)
                 ->cursor()
@@ -152,7 +152,7 @@ class JobPushCommand extends Command
     {
         $this->incrementFunnel($key, $job->payload);
 
-        DB::table('jobs')->delete($job->id);
+        DB::table(config('vapor-queue-manager.table_name'))->delete($job->id);
     }
 
     protected function shouldLoop($loopDelay = 1): bool

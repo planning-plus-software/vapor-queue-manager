@@ -133,7 +133,7 @@ class SqsQueue extends Queue implements QueueContract
 
         $availableAt = $this->availableAt();
 
-        return DB::table('jobs')->insert(collect((array) $jobs)->map(
+        return DB::table(config('vapor-queue-manager.table_name'))->insert(collect((array) $jobs)->map(
             function ($job) use ($queue, $data, $availableAt) {
                 return $this->buildDatabaseRecord($queue, $this->createPayload($job, $this->getQueue($queue), $data), $availableAt);
             }
@@ -164,7 +164,7 @@ class SqsQueue extends Queue implements QueueContract
      */
     protected function pushToDatabase($queue, $payload, $delay = 0, $attempts = 0)
     {
-        return DB::table('jobs')->insertGetId($this->buildDatabaseRecord(
+        return DB::table(config('vapor-queue-manager.table_name'))->insertGetId($this->buildDatabaseRecord(
             $this->getQueue($queue), $payload, $this->availableAt($delay), $attempts
         ));
     }
